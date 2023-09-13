@@ -1,6 +1,7 @@
 import streamlit as st
 import openai
 from docx import Document
+from langdetect import detect
 
 # Configurar la clave de la API de OpenAI
 api_key = st.sidebar.text_input("Enter your OpenAI API key", type="password")
@@ -9,10 +10,11 @@ if not api_key:
     st.warning("Please enter a valid API key to continue.")
 else:
     openai.api_key = api_key
-def translate_text(input_text):
+
+def translate_text(input_text, target_language):
     response = openai.Completion.create(
         engine="text-davinci-003",
-        prompt=f"Translate the following text to Spanish:\n\n{input_text}\n\nTranslation:",
+        prompt=f"Translate the following text from {detect(input_text)} to {target_language}:\n\n{input_text}\n\nTranslation:",
         max_tokens=100,
         temperature=0.7,
         top_p=1.0,
@@ -37,17 +39,31 @@ def main():
     # Obtener el archivo de entrada del usuario
     input_file = st.file_uploader("Cargar archivo de texto", type=["txt", "docx"])
     
-      
+    # Validar el archivo cargado
+    if input_file is None:
+        st.warning("Please upload a file.")
+        return
+    
+    # Validar el tipo de archivo cargado
+    if input_file.type not in ["text/plain", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"]:
+        st.warning("Please upload a valid text file or Word document.")
+        return
+    
+    # Detectar el idioma del texto de origen
+    if input_file.type == "text/plain":
+        input_text = input_file.read()
+    elif input_file.type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+        input_text = read_docx(input_file)
+    
+    source_language = detect(input_text)
+    
+    # Obtener el idioma de destino del usuario
+    target_language = st.selectbox("Select target language", ["Spanish", "French", "German"])
+    
     # Traducir el documento si se ha cargado un archivo y se ha ingresado una clave de API
-    if st.button("Traducir") and input_file and api_key:
-        # Leer el contenido del archivo
-        if input_file.type == "txt":
-            input_text = input_file.read()
-        elif input_file.type == "docx":
-            input_text = read_docx(input_file)
-        
+    if st.button("Traducir"):
         # Traducir el texto utilizando la función translate_text()
-        translated_text = translate_text(input_text)
+        translated_text = translate_text(input_text, target_language)
         
         # Mostrar el texto traducido al usuario
         st.text_area("Texto traducido", value=translated_text)
