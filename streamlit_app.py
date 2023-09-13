@@ -4,9 +4,8 @@ import docx2txt
 
 def translate_document(document, target_language, api_key):
     # Configurar la URL de la API de AI Translate
-    url = "https://ai-translate.pro/api/{API_KEY}/{source}-{target}".format(
+    url = "https://ai-translate.pro/api/{API_KEY}/en-{target}".format(
         API_KEY=api_key,
-        source="en",
         target=target_language
     )
 
@@ -23,14 +22,14 @@ def translate_document(document, target_language, api_key):
         # Obtener la respuesta JSON
         json_response = response.json()
 
-        # Comprobar si la respuesta JSON tiene la clave "text"
-        if "text" in json_response:
+        # Comprobar si la respuesta JSON tiene la clave "result"
+        if "result" in json_response:
             # Obtener la traducción del documento
-            translated_document = json_response["text"]
+            translated_document = json_response["result"]
 
             return translated_document
         else:
-            raise ValueError("La respuesta JSON no tiene la clave 'text'")
+            raise ValueError("La respuesta JSON no tiene la clave 'result'")
     else:
         raise ValueError("Error en la solicitud a la API de AI Translate")
 
@@ -48,7 +47,7 @@ def main():
         document = docx2txt.process(uploaded_file)
 
         # Seleccionar el idioma objetivo
-        target_language = st.selectbox("Seleccionar idioma objetivo", ["Español", "Francés", "Alemán"])
+        target_language = st.selectbox("Seleccionar idioma objetivo", ["fr"])
 
         # Traducir el documento
         if st.button("Traducir"):
