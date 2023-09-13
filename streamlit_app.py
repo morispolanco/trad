@@ -22,7 +22,6 @@ def translate_document(document, target_language, api_key):
             frequency_penalty=0.0,
             presence_penalty=0.0,
             stop=None,
-            temperature=0.7,
             n=1,
             log_level="info",
             api_key=api_key
