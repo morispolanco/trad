@@ -18,10 +18,21 @@ def translate_document(document, target_language, api_key):
     # Realizar la solicitud POST a la API de AI Translate
     response = requests.post(url, json=data)
 
-    # Obtener la traducción del documento
-    translated_document = response.json()["text"]
+    # Comprobar si la solicitud fue exitosa
+    if response.status_code == 200:
+        # Obtener la respuesta JSON
+        json_response = response.json()
 
-    return translated_document
+        # Comprobar si la respuesta JSON tiene la clave "text"
+        if "text" in json_response:
+            # Obtener la traducción del documento
+            translated_document = json_response["text"]
+
+            return translated_document
+        else:
+            raise ValueError("La respuesta JSON no tiene la clave 'text'")
+    else:
+        raise ValueError("Error en la solicitud a la API de AI Translate")
 
 def main():
     st.title("Traductor de documentos")
@@ -43,11 +54,14 @@ def main():
         if st.button("Traducir"):
             if api_key:
                 # Traducir el documento utilizando la clave API de AI Translate
-                translated_document = translate_document(document, target_language, api_key)
+                try:
+                    translated_document = translate_document(document, target_language, api_key)
 
-                # Mostrar el documento traducido
-                st.write("Documento traducido:")
-                st.write(translated_document)
+                    # Mostrar el documento traducido
+                    st.write("Documento traducido:")
+                    st.write(translated_document)
+                except ValueError as e:
+                    st.write("Error en la traducción del documento:", str(e))
             else:
                 st.write("Por favor, ingresa tu clave API de AI Translate en la columna izquierda.")
 
