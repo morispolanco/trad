@@ -37,9 +37,7 @@ def main():
     # Obtener el archivo de entrada del usuario
     input_file = st.file_uploader("Cargar archivo de texto", type=["txt", "docx"])
     
-    # Obtener la clave de API de OpenAI del usuario
-    api_key = st.sidebar.text_input("Ingrese su clave de API de OpenAI")
-    
+      
     # Traducir el documento si se ha cargado un archivo y se ha ingresado una clave de API
     if st.button("Traducir") and input_file and api_key:
         # Leer el contenido del archivo
