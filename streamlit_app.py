@@ -47,7 +47,7 @@ def main():
         document = docx2txt.process(uploaded_file)
 
         # Seleccionar el idioma objetivo
-        target_language = st.selectbox("Seleccionar idioma objetivo", ["fr"])
+        target_language = st.selectbox("Seleccionar idioma objetivo", ["es", "en", "fr"])
 
         # Traducir el documento
         if st.button("Traducir"):
