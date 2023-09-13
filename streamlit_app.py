@@ -1,74 +1,58 @@
-import openai
 import streamlit as st
-import PyPDF2
-from reportlab.pdfgen import canvas
+import openai
+from docx import Document
 
-def translate_document(document, target_language, api_key):
-    # Dividir el documento en páginas
-    pages = document.getNumPages()
-    
-    # Traducir cada página utilizando OpenAI
-    translated_pages = []
-    for page_num in range(pages):
-        page = document.getPage(page_num)
-        page_text = page.extractText()
-        
-        response = openai.Completion.create(
-            engine="text-davinci-003",
-            prompt=page_text,
-            max_tokens=100,
-            temperature=0.7,
-            top_p=1.0,
-            frequency_penalty=0.0,
-            presence_penalty=0.0,
-            stop=None,
-            n=1,
-            log_level="info",
-            api_key=api_key
-        )
-        translated_text = response.choices[0].text.strip()
-        translated_pages.append(translated_text)
-    
-    # Generar un nuevo archivo PDF con el texto traducido
-    translated_pdf = canvas.Canvas("translated_document.pdf")
-    for translated_page in translated_pages:
-        translated_pdf.drawString(100, 100, translated_page)
-        translated_pdf.showPage()
-    translated_pdf.save()
-    
-    return "translated_document.pdf"
+# Configurar la clave de la API de OpenAI
+api_key = st.sidebar.text_input("Enter your OpenAI API key", type="password")
+
+if not api_key:
+    st.warning("Please enter a valid API key to continue.")
+else:
+    openai.api_key = api_key
+def translate_text(input_text):
+    response = openai.Completion.create(
+        engine="text-davinci-003",
+        prompt=f"Translate the following text to Spanish:\n\n{input_text}\n\nTranslation:",
+        max_tokens=100,
+        temperature=0.7,
+        top_p=1.0,
+        frequency_penalty=0.0,
+        presence_penalty=0.0,
+        stop=None,
+        log_level="info"
+    )
+    translated_text = response.choices[0].text.strip()
+    return translated_text
+
+def read_docx(file):
+    doc = Document(file)
+    text = ""
+    for paragraph in doc.paragraphs:
+        text += paragraph.text + "\n"
+    return text
 
 def main():
-    st.title("Traductor de Documentos PDF")
+    st.title("Traductor de Documentos con OpenAI")
     
-    # Obtener el archivo PDF del usuario
-    pdf_file = st.file_uploader("Cargar archivo PDF", type=["pdf"])
+    # Obtener el archivo de entrada del usuario
+    input_file = st.file_uploader("Cargar archivo de texto", type=["txt", "docx"])
     
-    # Obtener el idioma de destino del usuario
-    target_language = st.selectbox("Seleccione el idioma de destino", ["Español", "Francés", "Alemán"])
+    # Obtener la clave de API de OpenAI del usuario
+    api_key = st.sidebar.text_input("Ingrese su clave de API de OpenAI")
     
-    # Obtener la clave de API del usuario
-    api_key = st.text_input("Ingrese su clave de API de OpenAI")
-    
-    # Mapear el idioma de destino seleccionado al código de idioma correspondiente
-    language_code = ""
-    if target_language == "Español":
-        language_code = "es"
-    elif target_language == "Francés":
-        language_code = "fr"
-    elif target_language == "Alemán":
-        language_code = "de"
-    
-    # Traducir el documento si se ha cargado un archivo, se ha seleccionado un idioma de destino y se ha ingresado una clave de API
-    if st.button("Traducir") and pdf_file and language_code and api_key:
-        # Leer el contenido del archivo PDF utilizando la biblioteca PyPDF2
-        pdf_reader = PyPDF2.PdfFileReader(pdf_file)
+    # Traducir el documento si se ha cargado un archivo y se ha ingresado una clave de API
+    if st.button("Traducir") and input_file and api_key:
+        # Leer el contenido del archivo
+        if input_file.type == "txt":
+            input_text = input_file.read()
+        elif input_file.type == "docx":
+            input_text = read_docx(input_file)
         
-        # Traducir el documento utilizando la función translate_document()
-        translated_document = translate_document(pdf_reader, language_code, api_key)
+        # Traducir el texto utilizando la función translate_text()
+        translated_text = translate_text(input_text)
         
-        # Mostrar el enlace de descarga del documento traducido al usuario
-        st.markdown(f"Descargar el documento traducido: [translated_document.pdf](./{translated_document})")
+        # Mostrar el texto traducido al usuario
+        st.text_area("Texto traducido", value=translated_text)
 
 if __name__ == "__main__":
     main()
