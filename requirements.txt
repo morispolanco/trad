@@ -1,5 +1,2 @@
-openai
 streamlit
-python-docx
-langdetect
 docx2text
