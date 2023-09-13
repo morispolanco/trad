@@ -1,5 +1,4 @@
 openai
 streamlit
 python-docx
-PyPDF2
-reportlab
+langdetect
