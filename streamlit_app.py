@@ -1,5 +1,6 @@
 import streamlit as st
 import requests
+import docx2txt
 
 def translate_document(document, target_language, api_key):
     # Configurar la URL de la API de AI Translate
