@@ -1,72 +1,54 @@
 import streamlit as st
-import openai
-from docx import Document
-from langdetect import detect
+import requests
 
-# Configurar la clave de la API de OpenAI
-api_key = st.sidebar.text_input("Enter your OpenAI API key", type="password")
-
-if not api_key:
-    st.warning("Please enter a valid API key to continue.")
-else:
-    openai.api_key = api_key
-
-def translate_text(input_text, target_language):
-    response = openai.Completion.create(
-        engine="text-davinci-003",
-        prompt=f"Translate the following text from {detect(input_text)} to {target_language}:\n\n{input_text}\n\nTranslation:",
-        max_tokens=100,
-        temperature=0.7,
-        top_p=1.0,
-        frequency_penalty=0.0,
-        presence_penalty=0.0,
-        stop=None,
-        log_level="info"
+def translate_document(document, target_language, api_key):
+    # Configurar la URL de la API de AI Translate
+    url = "https://ai-translate.pro/api/{API_KEY}/{source}-{target}".format(
+        API_KEY=api_key,
+        source="en",
+        target=target_language
     )
-    translated_text = response.choices[0].text.strip()
-    return translated_text
 
-def read_docx(file):
-    doc = Document(file)
-    text = ""
-    for paragraph in doc.paragraphs:
-        text += paragraph.text + "\n"
-    return text
+    # Configurar los datos de la solicitud
+    data = {
+        "text": document
+    }
+
+    # Realizar la solicitud POST a la API de AI Translate
+    response = requests.post(url, json=data)
+
+    # Obtener la traducción del documento
+    translated_document = response.json()["text"]
+
+    return translated_document
 
 def main():
-    st.title("Traductor de Documentos con OpenAI")
-    
-    # Obtener el archivo de entrada del usuario
-    input_file = st.file_uploader("Cargar archivo de texto", type=["txt", "docx"])
-    
-    # Validar el archivo cargado
-    if input_file is None:
-        st.warning("Please upload a file.")
-        return
-    
-    # Validar el tipo de archivo cargado
-    if input_file.type not in ["text/plain", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"]:
-        st.warning("Please upload a valid text file or Word document.")
-        return
-    
-    # Detectar el idioma del texto de origen
-    if input_file.type == "text/plain":
-        input_text = input_file.read()
-    elif input_file.type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-        input_text = read_docx(input_file)
-    
-    source_language = detect(input_text)
-    
-    # Obtener el idioma de destino del usuario
-    target_language = st.selectbox("Select target language", ["Spanish", "French", "German"])
-    
-    # Traducir el documento si se ha cargado un archivo y se ha ingresado una clave de API
-    if st.button("Traducir"):
-        # Traducir el texto utilizando la función translate_text()
-        translated_text = translate_text(input_text, target_language)
-        
-        # Mostrar el texto traducido al usuario
-        st.text_area("Texto traducido", value=translated_text)
+    st.title("Traductor de documentos")
+
+    # Ingresar la clave API de AI Translate
+    api_key = st.sidebar.text_input("Clave API de AI Translate")
+
+    # Cargar el documento
+    uploaded_file = st.file_uploader("Cargar documento", type=["docx"])
+
+    if uploaded_file is not None:
+        # Leer el contenido del documento
+        document = docx2txt.process(uploaded_file)
+
+        # Seleccionar el idioma objetivo
+        target_language = st.selectbox("Seleccionar idioma objetivo", ["Español", "Francés", "Alemán"])
+
+        # Traducir el documento
+        if st.button("Traducir"):
+            if api_key:
+                # Traducir el documento utilizando la clave API de AI Translate
+                translated_document = translate_document(document, target_language, api_key)
+
+                # Mostrar el documento traducido
+                st.write("Documento traducido:")
+                st.write(translated_document)
+            else:
+                st.write("Por favor, ingresa tu clave API de AI Translate en la columna izquierda.")
 
 if __name__ == "__main__":
     main()
