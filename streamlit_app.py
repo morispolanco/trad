@@ -1,6 +1,7 @@
 import streamlit as st
 import requests
 import os
+from docx import Document
 
 # Obtener la clave secreta de la API desde los secrets de Streamlit
 secret_key = st.secrets["API_KEY"]
@@ -24,24 +25,30 @@ def translate_text(text, lang_from, lang_to, secret_key):
 # Título de la aplicación
 st.title("Traductor de Texto")
 
-# Entrada de texto
-input_text = st.text_area("Ingrese el texto a traducir:")
+# Cargar archivo DOCX
+uploaded_file = st.file_uploader("Cargar archivo DOCX", type=["docx"])
 
-# Selección de idiomas
-lang_from = st.selectbox("Seleccione el idioma de origen:", ["en", "es"])
-lang_to = st.selectbox("Seleccione el idioma de destino:", ["en", "es"])
+# Verificar si se cargó un archivo
+if uploaded_file is not None:
+    # Leer el contenido del archivo DOCX
+    docx = Document(uploaded_file)
+    text = "\n".join([paragraph.text for paragraph in docx.paragraphs])
 
-# Botón para traducir
-if st.button("Traducir"):
-    if secret_key:
-        translation, available_chars = translate_text(input_text, lang_from, lang_to, secret_key)
-        if translation:
-            st.success(f"Texto traducido: {translation}")
-            st.info(f"Caracteres disponibles: {available_chars}")
+    # Mostrar el contenido del archivo
+    st.text_area("Contenido del archivo", value=text)
+
+    # Selección de idiomas
+    lang_from = st.selectbox("Seleccione el idioma de origen:", ["en", "es"])
+    lang_to = st.selectbox("Seleccione el idioma de destino:", ["en", "es"])
+
+    # Botón para traducir
+    if st.button("Traducir"):
+        if secret_key:
+            translation, available_chars = translate_text(text, lang_from, lang_to, secret_key)
+            if translation:
+                st.success(f"Texto traducido: {translation}")
+                st.info(f"Caracteres disponibles: {available_chars}")
+            else:
+                st.error("Error al traducir el texto. Verifique su clave secreta o intente nuevamente.")
         else:
-            st.error("Error al traducir el texto. Verifique su clave secreta o intente nuevamente.")
-    else:
-        st.error("La clave secreta 'API_KEY' no está configurada en los secrets de Streamlit. Configúrela primero.")
-
-# Pie de página
-st.footer("Powered by ai-translate.pro")
+            st.error("La clave secreta 'API_KEY' no está configurada en los secrets de Streamlit. Configúrela primero.")
