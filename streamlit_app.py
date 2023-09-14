@@ -1,60 +1,47 @@
 import streamlit as st
 import requests
-import docx2txt
+import os
 
-def translate_document(document, target_language):
-    # Obtener la clave API de los secrets de Streamlit
-    api_key = st.secrets["API_KEY"]
+# Obtener la clave secreta de la API desde las variables de entorno
+secret_key = os.getenv("API_KEY")
 
-    # Configurar la URL de la API de AI Translate
-    url = "https://ai-translate.pro/api/{API_KEY}/en-{target}".format(
-        API_KEY=api_key,
-        target=target_language
-    )
+# URL base de la API de ai-translate
+BASE_URL = "https://ai-translate.pro/api"
 
-    # Configurar los datos de la solicitud
-    data = {
-        "text": document
-    }
-
-    # Realizar la solicitud POST a la API de AI Translate
-    response = requests.post(url, json=data)
-    
-    # Verificar si la solicitud fue exitosa
+# Función para traducir texto
+def translate_text(text, lang_from, lang_to, secret_key):
+    url = f"{BASE_URL}/{secret_key}/{lang_from}-{lang_to}"
+    headers = {'Content-Type': 'application/json'}
+    data = {"text": text}
+    response = requests.post(url, headers=headers, json=data)
     if response.status_code == 200:
-        response_json = response.json()
-        if "translated_text" in response_json:
-            translated_document = response_json["translated_text"]
-            return translated_document
-        else:
-            raise ValueError("La respuesta de la API no contiene el campo 'translated_text'")
+        result = response.json()["result"]
+        available_chars = response.json()["available_chars"]
+        return result, available_chars
     else:
-        raise ValueError("Error en la solicitud a la API de AI Translate")
+        return None, None
 
-def main():
-    st.title("Traductor de documentos")
+# Título de la aplicación
+st.title("Traductor de Texto")
 
-    # Cargar el documento
-    uploaded_file = st.file_uploader("Cargar documento", type=["docx"])
+# Entrada de texto
+input_text = st.text_area("Ingrese el texto a traducir:")
 
-    if uploaded_file is not None:
-        # Leer el contenido del documento
-        document = docx2txt.process(uploaded_file)
+# Selección de idiomas
+lang_from = st.selectbox("Seleccione el idioma de origen:", ["en", "es"])
+lang_to = st.selectbox("Seleccione el idioma de destino:", ["en", "es"])
 
-        # Seleccionar el idioma objetivo
-        target_language = st.selectbox("Seleccionar idioma objetivo", ["es", "en", "fr"])
+# Botón para traducir
+if st.button("Traducir"):
+    if secret_key:
+        translation, available_chars = translate_text(input_text, lang_from, lang_to, secret_key)
+        if translation:
+            st.success(f"Texto traducido: {translation}")
+            st.info(f"Caracteres disponibles: {available_chars}")
+        else:
+            st.error("Error al traducir el texto. Verifique su clave secreta o intente nuevamente.")
+    else:
+        st.error("La clave secreta 'API_KEY' no está configurada en las variables de entorno. Configúrala primero.")
 
-        # Traducir el documento
-        if st.button("Traducir"):
-            # Traducir el documento utilizando la clave API de AI Translate
-            try:
-                translated_document = translate_document(document, target_language)
-
-                # Mostrar el documento traducido
-                st.write("Documento traducido:")
-                st.write(translated_document)
-            except ValueError as e:
-                st.write("Error en la traducción del documento:", str(e))
-
-if __name__ == "__main__":
-    main()
+# Pie de página
+st.footer("Powered by ai-translate.pro")
