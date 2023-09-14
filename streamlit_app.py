@@ -4,7 +4,7 @@ import docx2txt
 
 def translate_document(document, target_language, api_key):
     # Configurar la URL de la API de AI Translate
-    url = "https://ai-translate.pro/api/{API_KEY}/en-{target}".format(
+    url = "https://ai-translate.pro/api/{9428f69325adc980cc9b9dc6a0f84a30a3eb86e74787792c581cc44e4c1adfae}/en-{target}".format(
         API_KEY=api_key,
         target=target_language
     )
