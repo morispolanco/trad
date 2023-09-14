@@ -1,10 +1,11 @@
 import streamlit as st
 import requests
 import docx2txt
+import os
 
 def translate_document(document, target_language, api_key):
     # Configurar la URL de la API de AI Translate
-    url = "https://ai-translate.pro/api/{9428f69325adc980cc9b9dc6a0f84a30a3eb86e74787792c581cc44e4c1adfae}/en-{target}".format(
+    url = "https://ai-translate.pro/api/{API_KEY}/en-{target}".format(
         API_KEY=api_key,
         target=target_language
     )
@@ -17,27 +18,13 @@ def translate_document(document, target_language, api_key):
     # Realizar la solicitud POST a la API de AI Translate
     response = requests.post(url, json=data)
 
-    # Comprobar si la solicitud fue exitosa
-    if response.status_code == 200:
-        # Obtener la respuesta JSON
-        json_response = response.json()
-
-        # Comprobar si la respuesta JSON tiene la clave "result"
-        if "result" in json_response:
-            # Obtener la traducción del documento
-            translated_document = json_response["result"]
-
-            return translated_document
-        else:
-            raise ValueError("La respuesta JSON no tiene la clave 'result'")
-    else:
-        raise ValueError("Error en la solicitud a la API de AI Translate")
+    # Resto del código...
 
 def main():
     st.title("Traductor de documentos")
 
     # Ingresar la clave API de AI Translate
-    api_key = st.sidebar.text_input("Clave API de AI Translate")
+    api_key = os.getenv("API_KEY")
 
     # Cargar el documento
     uploaded_file = st.file_uploader("Cargar documento", type=["docx"])
