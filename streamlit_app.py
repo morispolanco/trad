@@ -22,8 +22,12 @@ def translate_document(document, target_language):
     
     # Verificar si la solicitud fue exitosa
     if response.status_code == 200:
-        translated_document = response.json()["translated_text"]
-        return translated_document
+        response_json = response.json()
+        if "translated_text" in response_json:
+            translated_document = response_json["translated_text"]
+            return translated_document
+        else:
+            raise ValueError("La respuesta de la API no contiene el campo 'translated_text'")
     else:
         raise ValueError("Error en la solicitud a la API de AI Translate")
 
