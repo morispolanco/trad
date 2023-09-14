@@ -23,8 +23,12 @@ def translate_document(document, target_language, api_key):
 def main():
     st.title("Traductor de documentos")
 
-    # Ingresar la clave API de AI Translate
+    # Obtener la clave API de AI Translate desde la variable de entorno
     api_key = os.getenv("API_KEY")
+
+    if api_key is None:
+        st.write("Por favor, configura la variable de entorno API_KEY con tu clave API de AI Translate.")
+        return
 
     # Cargar el documento
     uploaded_file = st.file_uploader("Cargar documento", type=["docx"])
@@ -38,18 +42,15 @@ def main():
 
         # Traducir el documento
         if st.button("Traducir"):
-            if api_key:
-                # Traducir el documento utilizando la clave API de AI Translate
-                try:
-                    translated_document = translate_document(document, target_language, api_key)
+            # Traducir el documento utilizando la clave API de AI Translate
+            try:
+                translated_document = translate_document(document, target_language, api_key)
 
-                    # Mostrar el documento traducido
-                    st.write("Documento traducido:")
-                    st.write(translated_document)
-                except ValueError as e:
-                    st.write("Error en la traducción del documento:", str(e))
-            else:
-                st.write("Por favor, ingresa tu clave API de AI Translate en la columna izquierda.")
+                # Mostrar el documento traducido
+                st.write("Documento traducido:")
+                st.write(translated_document)
+            except ValueError as e:
+                st.write("Error en la traducción del documento:", str(e))
 
 if __name__ == "__main__":
     main()
