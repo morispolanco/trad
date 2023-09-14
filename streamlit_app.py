@@ -1,63 +1,47 @@
 import streamlit as st
 import requests
-import json
 import os
 
-def translate_text(text, source_lang, target_lang, api_key):
-    # Configurar la URL de la API de AI Translate
-    url = f"https://ai-translate.pro/api/{api_key}/{source_lang}-{target_lang}"
+# Obtener la clave secreta de la API desde los secrets de Streamlit
+secret_key = st.secrets["API_KEY"]
 
-    # Configurar los datos de la solicitud
-    data = {
-        "text": text
-    }
+# URL base de la API de AI Translate
+BASE_URL = "https://ai-translate.pro/api"
 
-    # Realizar la solicitud POST a la API de AI Translate
-    response = requests.post(url, json=data)
-
-    # Comprobar si la solicitud fue exitosa
+# Función para traducir texto
+def translate_text(text, lang_from, lang_to, secret_key):
+    url = f"{BASE_URL}/{secret_key}/{lang_from}-{lang_to}"
+    headers = {'Content-Type': 'application/json'}
+    data = {"text": text}
+    response = requests.post(url, headers=headers, json=data)
     if response.status_code == 200:
-        # Obtener la respuesta JSON
-        json_response = response.json()
-
-        # Comprobar si la respuesta JSON tiene la clave "result"
-        if "result" in json_response:
-            # Obtener el texto traducido
-            translated_text = json_response["result"]
-
-            return translated_text
-        else:
-            raise ValueError("La respuesta JSON no tiene la clave 'result'")
+        result = response.json()["result"]
+        available_chars = response.json()["available_chars"]
+        return result, available_chars
     else:
-        raise ValueError("Error en la solicitud a la API de AI Translate")
+        return None, None
 
-def main():
-    st.title("Traductor de documentos")
+# Título de la aplicación
+st.title("Traductor de Texto")
 
-    # Ingresar la clave API de AI Translate
-    api_key = os.getenv["api_key"]
+# Entrada de texto
+input_text = st.text_area("Ingrese el texto a traducir:")
 
-    # Ingresar el texto a traducir
-    text = st.text_area("Texto a traducir")
+# Selección de idiomas
+lang_from = st.selectbox("Seleccione el idioma de origen:", ["en", "es"])
+lang_to = st.selectbox("Seleccione el idioma de destino:", ["en", "es"])
 
-    # Seleccionar el idioma de origen y destino
-    source_lang = st.selectbox("Idioma de origen", ["en", "es"])
-    target_lang = st.selectbox("Idioma de destino", ["en", "es"])
-
-    # Traducir el texto
-    if st.button("Traducir"):
-        if api_key:
-            # Traducir el texto utilizando la clave API de AI Translate
-            try:
-                translated_text = translate_text(text, source_lang, target_lang, api_key)
-
-                # Mostrar el texto traducido
-                st.write("Texto traducido:")
-                st.write(translated_text)
-            except ValueError as e:
-                st.write("Error en la traducción del texto:", str(e))
+# Botón para traducir
+if st.button("Traducir"):
+    if secret_key:
+        translation, available_chars = translate_text(input_text, lang_from, lang_to, secret_key)
+        if translation:
+            st.success(f"Texto traducido: {translation}")
+            st.info(f"Caracteres disponibles: {available_chars}")
         else:
-            st.write("Por favor, ingresa tu clave API de AI Translate en los secrets de Streamlit.")
+            st.error("Error al traducir el texto. Verifique su clave secreta o intente nuevamente.")
+    else:
+        st.error("La clave secreta 'API_KEY' no está configurada en los secrets de Streamlit. Configúrela primero.")
 
-if __name__ == "__main__":
-    main()
+# Pie de página
+st.footer("Powered by ai-translate.pro")
