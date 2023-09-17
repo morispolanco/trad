@@ -21,8 +21,11 @@ def translate_text(text, lang_from, lang_to, secret_key):
 # Título de la aplicación
 st.title("Traductor de Texto")
 
+# Explicación sobre cómo obtener la clave API
+st.sidebar.markdown("Para obtener la clave API de AI Translate, por favor envíe un correo electrónico a info@editorialarje.com.")
+
 # Campo de entrada para la clave API
-secret_key = st.text_input("Ingrese su clave API de AI Translate")
+secret_key = st.sidebar.text_input("Ingrese su clave API de AI Translate")
 
 # Cargar archivo DOCX
 uploaded_file = st.file_uploader("Cargar archivo DOCX", type=["docx"])
