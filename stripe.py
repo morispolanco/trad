@@ -65,10 +65,6 @@ if st.button("Procesar Pago"):
         else:
             st.error("Error al traducir el texto. Verifique su conexión a Internet o intente nuevamente.")
 
-    except stripe.error.CardError as e:
-        # Si hay un error con la tarjeta de crédito, mostrar un mensaje de error
-        st.error(f"Error al procesar el pago: {e.error.message}")
-
     except Exception as e:
-        # Si hay un error inesperado, mostrar un mensaje de error
-        st.error(f"Error inesperado: {str(e)}")
+        # Si hay un error, mostrar un mensaje de error
+        st.error(f"Error al procesar el pago: {str(e)}")
