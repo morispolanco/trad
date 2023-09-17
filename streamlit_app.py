@@ -2,18 +2,18 @@ import streamlit as st
 import requests
 from docx import Document
 
-# Agregar código JavaScript para ocultar el botón "View Full Screen"
-hide_fullscreen_button_js = """
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const fullscreenButton = document.querySelector('.viewerBadge_container__1QSob');
-            if (fullscreenButton) {
-                fullscreenButton.style.display = 'none';
-            }
-        });
-    </script>
+# Agregar código CSS para ocultar el botón "View Full Screen"
+style_fullscreen_button_css = """
+    button[title="View fullscreen"] {
+        display: none;
+    }
 """
-st.markdown(hide_fullscreen_button_js, unsafe_allow_html=True)
+st.markdown(
+    "<style>"
+    + style_fullscreen_button_css
+    + "</style>",
+    unsafe_allow_html=True,
+)
 
 # Obtener la clave secreta de la API desde los secrets de Streamlit
 secret_key = st.secrets["API_KEY"]
