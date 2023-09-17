@@ -1,12 +1,18 @@
 import streamlit as st
 import stripe
 import requests
+import nltk
 
 # Configurar la clave secreta de Stripe
 stripe.api_key = st.secrets["STRIPE_SECRET_KEY"]
 
 # URL base de la API de AI Translate
 BASE_URL = "https://ai-translate.pro/api"
+
+# Función para contar las palabras en el texto
+def count_words(text):
+    words = nltk.word_tokenize(text)
+    return len(words)
 
 # Función para traducir texto
 def translate_text(text, lang_from, lang_to):
@@ -36,9 +42,15 @@ payment_info = st.text_input("Ingrese su información de pago (tarjeta de crédi
 # Botón para procesar el pago
 if st.button("Procesar Pago"):
     try:
+        # Contar las palabras en el texto
+        word_count = count_words(text)
+
+        # Calcular el costo de la traducción
+        translation_cost = word_count // 1000 * 1.0
+
         # Crear una carga de pago en Stripe
         payment_intent = stripe.PaymentIntent.create(
-            amount=1000,  # Monto en centavos (ejemplo: $10.00)
+            amount=int(translation_cost * 100),  # Monto en centavos
             currency="usd",
             payment_method_types=["card"],
         )
