@@ -3,26 +3,21 @@ import requests
 import os
 from docx import Document
 
-# Agregar código JavaScript para poner en pantalla completa
-st.markdown(
-    """
-    <script>
-        const isInIframe = () => {
-            try {
-                return window.self !== window.top;
-            } catch (e) {
-                return true;
-            }
-        };
+style_css = """
+    footer {
+        visibility: hidden;
+    }
 
-        if (isInIframe()) {
-            document.documentElement.requestFullscreen();
-        }
-    </script>
-    """,
+    .viewerBadge_container__1QSob {
+        display: none;
+    }
+"""
+st.markdown(
+    "<style>"
+    + style_css
+    + "</style>",
     unsafe_allow_html=True,
 )
-
 
 
 
