@@ -1,9 +1,6 @@
 import streamlit as st
 import requests
 
-# Obtener la clave pública de Stripe desde los secrets de Streamlit
-stripe_publishable_key = st.secrets["STRIPE_KEY"]
-
 # URL base de la API de AI Translate
 BASE_URL = "https://ai-translate.pro/api"
 
@@ -36,7 +33,3 @@ if st.button("Traducir"):
         st.success(f"Texto traducido: {translation}")
     else:
         st.error("Error al traducir el texto. Verifique su conexión a Internet o intente nuevamente.")
-
-# Mostrar clave pública de Stripe
-st.write("Clave pública de Stripe:")
-st.write(stripe_publishable_key)
