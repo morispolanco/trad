@@ -1,51 +1,62 @@
 import streamlit as st
 import stripe
+import requests
 
-# Configurar las claves de API de Stripe
-stripe.api_key = 'your_stripe_secret_key'
-stripe.api_version = '2020-08-27'
+# Configurar la clave secreta de Stripe
+stripe.api_key = st.secrets["STRIPE_SECRET_KEY"]
 
-# Página de inicio
-def home():
-    st.title('Bienvenido a la aplicación de suscripción')
-    st.write('Aquí puedes suscribirte para acceder a la aplicación de traducción.')
+# URL base de la API de AI Translate
+BASE_URL = "https://ai-translate.pro/api"
 
-    # Obtener los planes de suscripción disponibles desde Stripe
-    plans = stripe.Price.list(active=True, type='recurring')
+# Función para traducir texto
+def translate_text(text, lang_from, lang_to):
+    url = f"{BASE_URL}/{lang_from}-{lang_to}"
+    headers = {'Content-Type': 'application/json'}
+    data = {"text": text}
+    response = requests.post(url, headers=headers, json=data)
+    if response.status_code == 200:
+        result = response.json()["result"]
+        return result
+    else:
+        return None
 
-    # Mostrar los planes de suscripción en un formulario
-    selected_plan = st.selectbox('Selecciona un plan de suscripción:', options=[(plan.id, plan.nickname) for plan in plans.data])
+# Título de la aplicación
+st.title("Traductor de Texto")
 
-    # Botón de suscripción
-    if st.button('Suscribirse'):
-        # Crear una sesión de checkout en Stripe
-        session = stripe.checkout.Session.create(
-            success_url='http://localhost:8501/translate',
-            cancel_url='http://localhost:8501/',
-            payment_method_types=['card'],
-            mode='subscription',
-            line_items=[{
-                'price': selected_plan,
-                'quantity': 1,
-            }],
+# Entrada de texto
+text = st.text_area("Ingrese el texto a traducir")
+
+# Selección de idiomas
+lang_from = st.selectbox("Seleccione el idioma de origen:", ["en", "es"])
+lang_to = st.selectbox("Seleccione el idioma de destino:", ["en", "es"])
+
+# Campo de entrada para la información de pago
+payment_info = st.text_input("Ingrese su información de pago (tarjeta de crédito)")
+
+# Botón para procesar el pago
+if st.button("Procesar Pago"):
+    try:
+        # Crear una carga de pago en Stripe
+        payment_intent = stripe.PaymentIntent.create(
+            amount=1000,  # Monto en centavos (ejemplo: $10.00)
+            currency="usd",
+            payment_method_types=["card"],
         )
 
-        # Redirigir al usuario a la página de checkout de Stripe
-        st.redirect(session.url)
+        # Confirmar el pago
+        stripe.PaymentIntent.confirm(payment_intent.id, payment_method=payment_info)
 
-# Página de traducción
-def translate():
-    st.title('Aplicación de traducción')
-    st.write('Aquí puedes utilizar la aplicación de traducción.')
+        # Si el pago es exitoso, realizar la traducción del texto
+        translation = translate_text(text, lang_from, lang_to)
+        if translation:
+            st.success(f"Texto traducido: {translation}")
+        else:
+            st.error("Error al traducir el texto. Verifique su conexión a Internet o intente nuevamente.")
 
-    # Lógica de la aplicación de traducción
-    # ...
+    except stripe.error.CardError as e:
+        # Si hay un error con la tarjeta de crédito, mostrar un mensaje de error
+        st.error(f"Error al procesar el pago: {e.error.message}")
 
-# Enrutamiento de páginas
-if __name__ == '__main__':
-    page = st.sidebar.selectbox('Selecciona una página:', options=['Inicio', 'Traducción'])
-
-    if page == 'Inicio':
-        home()
-    elif page == 'Traducción':
-        translate()
+    except Exception as e:
+        # Si hay un error inesperado, mostrar un mensaje de error
+        st.error(f"Error inesperado: {str(e)}")
