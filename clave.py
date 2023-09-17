@@ -21,11 +21,8 @@ def translate_text(text, lang_from, lang_to, secret_key):
 # Título de la aplicación
 st.title("Traductor de Texto")
 
-# Explicación sobre cómo obtener la clave API
-st.sidebar.markdown("Para obtener la clave API de AI Translate, por favor envíe un correo electrónico a info@editorialarje.com.")
-
 # Campo de entrada para la clave API
-secret_key = st.sidebar.text_input("Ingrese su clave API de AI Translate")
+secret_key = st.text_input("Ingrese su clave API de AI Translate")
 
 # Cargar archivo DOCX
 uploaded_file = st.file_uploader("Cargar archivo DOCX", type=["docx"])
@@ -48,7 +45,14 @@ if uploaded_file is not None:
         if secret_key:
             translation, available_chars = translate_text(text, lang_from, lang_to, secret_key)
             if translation:
-                st.success(f"Texto traducido: {translation}")
+                # Crear un nuevo documento DOCX con la traducción
+                translated_docx = Document()
+                translated_docx.add_paragraph(translation)
+
+                # Guardar el documento DOCX en un archivo
+                translated_docx.save("traduccion.docx")
+
+                st.success("La traducción se ha guardado en el archivo 'traduccion.docx'")
                 st.info(f"Caracteres disponibles: {available_chars}")
             else:
                 st.error("Error al traducir el texto. Verifique su clave API o intente nuevamente.")
