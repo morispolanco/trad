@@ -19,7 +19,7 @@ st.markdown(
     "<style>"
     + style_fullscreen_button_css
     + "</styles>",
-    unsafe_allow_html=True,
+    unsafe_allow_html=False,
 )
 
 # Obtener la clave secreta de la API desde los secrets de Streamlit
