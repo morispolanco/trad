@@ -3,17 +3,27 @@ import requests
 import os
 from docx import Document
 
-style_fullscreen_button_css = """
-    button[title="View fullscreen"] {
-        display: none !important;
-    }
-"""
+# Agregar código JavaScript para poner en pantalla completa
 st.markdown(
-    "<style>"
-    + style_fullscreen_button_css
-    + "</style>",
+    """
+    <script>
+        const isInIframe = () => {
+            try {
+                return window.self !== window.top;
+            } catch (e) {
+                return true;
+            }
+        };
+
+        if (isInIframe()) {
+            document.documentElement.requestFullscreen();
+        }
+    </script>
+    """,
     unsafe_allow_html=True,
 )
+
+
 
 # Obtener la clave secreta de la API desde los secrets de Streamlit
 secret_key = st.secrets["API_KEY"]
