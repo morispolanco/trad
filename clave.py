@@ -1,6 +1,7 @@
 import streamlit as st
 import requests
 from docx import Document
+from io import BytesIO
 
 # URL base de la API de AI Translate
 BASE_URL = "https://ai-translate.pro/api"
@@ -21,8 +22,11 @@ def translate_text(text, lang_from, lang_to, secret_key):
 # Título de la aplicación
 st.title("Traductor de Texto")
 
+# Explicación sobre cómo obtener la clave API
+st.sidebar.markdown("Para obtener la clave API de AI Translate, por favor envíe un correo electrónico a info@editorialarje.com.")
+
 # Campo de entrada para la clave API
-secret_key = st.text_input("Ingrese su clave API de AI Translate")
+secret_key = st.sidebar.text_input("Ingrese su clave API de AI Translate")
 
 # Cargar archivo DOCX
 uploaded_file = st.file_uploader("Cargar archivo DOCX", type=["docx"])
@@ -49,8 +53,13 @@ if uploaded_file is not None:
                 translated_docx = Document()
                 translated_docx.add_paragraph(translation)
 
-                # Guardar el documento DOCX en un archivo
-                translated_docx.save("traduccion.docx")
+                # Guardar el documento DOCX en un objeto BytesIO
+                docx_buffer = BytesIO()
+                translated_docx.save(docx_buffer)
+                docx_buffer.seek(0)
+
+                # Descargar el archivo DOCX
+                st.download_button("Descargar traducción", data=docx_buffer, file_name="traduccion.docx")
 
                 st.success("La traducción se ha guardado en el archivo 'traduccion.docx'")
                 st.info(f"Caracteres disponibles: {available_chars}")
