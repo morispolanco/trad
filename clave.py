@@ -20,7 +20,7 @@ def translate_text(text, lang_from, lang_to, secret_key):
         return None, None
 
 # Título de la aplicación
-st.title("Traductor de Texto")
+st.title("AI Translate")
 
 # Explicación sobre cómo obtener la clave API
 st.sidebar.markdown("Para obtener la clave API de AI Translate, por favor envíe un correo electrónico a info@editorialarj.com.")
