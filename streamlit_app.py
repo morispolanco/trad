@@ -1,13 +1,9 @@
 import streamlit as st
 import requests
-import os
 from docx import Document
 
+# Agregar código CSS para ocultar el botón "View Full Screen"
 style_css = """
-    footer {
-        visibility: hidden;
-    }
-
     .viewerBadge_container__1QSob {
         display: none;
     }
@@ -18,8 +14,6 @@ st.markdown(
     + "</style>",
     unsafe_allow_html=True,
 )
-
-
 
 # Obtener la clave secreta de la API desde los secrets de Streamlit
 secret_key = st.secrets["API_KEY"]
