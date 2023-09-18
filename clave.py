@@ -24,6 +24,8 @@ st.title("AI Translate")
 
 # Explicación sobre cómo obtener la clave API
 st.sidebar.markdown("Para obtener la clave API de AI Translate, por favor envíe un correo electrónico a info@editorialarje.com.")
+st.sidebar.markdown("Máximo número de caracteres por documento: 6,000.")
+
 
 # Campo de entrada para la clave API
 secret_key = st.sidebar.text_input("Ingrese su clave API de AI Translate")
