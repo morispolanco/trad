@@ -22,7 +22,8 @@ def translate_text(text, lang_from, lang_to, secret_key):
         return None, None
 
 # Título de la aplicación
-st.title("Traductor de Texto")
+st.title("AI Translate")
+st.markdown("6,000 caracteres máximo por documento")
 
 # Cargar archivo DOCX
 uploaded_file = st.file_uploader("Cargar archivo DOCX", type=["docx"])
