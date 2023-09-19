@@ -3,6 +3,9 @@ import requests
 from docx import Document
 from io import BytesIO
 
+# Cambiar el título en la pestaña del navegador
+st.set_page_config(page_title="AiTranslate")
+
 # URL base de la API de AI Translate
 BASE_URL = "https://ai-translate.pro/api"
 
