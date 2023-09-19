@@ -29,7 +29,7 @@ st.sidebar.markdown("Las redes neuronales de AITranslate son capaces de captar h
 
 
 # Campo de entrada para la clave API
-secret_key = st.sidebar.text_input("Ingrese su clave API de AI Translate")
+secret_key = st.sidebar.text_input("Ingrese su clave API de AITranslate", type = "password")
 
 # Explicación sobre cómo obtener la clave API
 st.sidebar.markdown("Para obtener la clave API de AI Translate, por favor envíe un correo electrónico a info@editorialarje.com.")
