@@ -27,7 +27,7 @@ def translate_text(text, lang_from, lang_to, secret_key):
 st.title("AITranslate")
 
 # Agregar título y texto en la parte superior
-st.markdown("# La mejor traducción automática del mundo")
+st.markdown("## La mejor traducción automática del mundo")
 st.markdown("Las redes neuronales de AITranslate son capaces de captar hasta los más mínimos matices y reproducirlos en la traducción a diferencia de cualquier otro servicio. Para evaluar la calidad de nuestros modelos de traducción automática, realizamos regularmente pruebas a ciegas. En las pruebas a ciegas, los traductores profesionales seleccionan la traducción más precisa sin saber qué empresa la produjo. AITranslate supera a la competencia por un factor de 3:1.")
 
 # Campo de entrada para la clave API
