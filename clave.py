@@ -20,12 +20,12 @@ def translate_text(text, lang_from, lang_to, secret_key):
         return None, None
 
 # Título de la aplicación
-st.title("AI Translate")
+st.title("AITranslate")
 
 
 # Agregar título y texto en la parte superior de la columna
 st.sidebar.markdown("# La mejor traducción automática del mundo")
-st.sidebar.markdown("Las redes neuronales de AITranslate son capaces de captar hasta los más mínimos matices y reproducirlos en la traducción a diferencia de cualquier otro servicio. Para evaluar la calidad de nuestros modelos de traducción automática, realizamos regularmente pruebas a ciegas. En las pruebas a ciegas, los traductores profesionales seleccionan la traducción más precisa sin saber qué empresa la produjo. AITranslate supera a la competencia por un factor de 3:1. Desde el lanzamiento inicial de AITranslate en 2018, hemos estado desarrollando una generación completamente nueva de redes neuronales (NN). Utilizando un novedoso diseño de NN, las redes de AITranslate aprenden a captar los significados sutiles de las oraciones y traducirlas a un idioma de destino de una manera sin precedentes. Esto ha llevado a una calidad de traducción automática de renombre mundial que supera a todas las principales empresas de tecnología. AITranslate no solo se mantiene al día con las empresas de aprendizaje profundo líderes en el mundo, sino que continúa estableciendo nuevos estándares con sus avances en matemáticas y metodología de redes neuronales. En 2020 y 2021, lanzamos nuevos modelos que pueden transmitir con mayor precisión el significado de las oraciones traducidas, incluso superando el desafío de la jerga profesional específica de la industria con gran éxito. En AITranslate, apenas estamos empezando. Continuaremos utilizando nuestra experiencia en inteligencia artificial y redes neuronales para crear tecnologías que hagan que la comunicación sea más rápida, mejor y más fácil.")
+st.sidebar.markdown("Las redes neuronales de AITranslate son capaces de captar hasta los más mínimos matices y reproducirlos en la traducción a diferencia de cualquier otro servicio. Para evaluar la calidad de nuestros modelos de traducción automática, realizamos regularmente pruebas a ciegas. En las pruebas a ciegas, los traductores profesionales seleccionan la traducción más precisa sin saber qué empresa la produjo. AITranslate supera a la competencia por un factor de 3:1. ")
 
 
 # Campo de entrada para la clave API
