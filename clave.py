@@ -2,7 +2,6 @@ import streamlit as st
 import requests
 from PyPDF2 import PdfFileReader
 from docx import Document
-from fpdf import FPDF
 
 # URL base de la API de AI Translate
 BASE_URL = "https://ai-translate.pro/api"
@@ -55,16 +54,14 @@ if uploaded_file is not None:
             if translation:
                 st.info(f"Caracteres disponibles: {available_chars}")
 
-                # Generar archivo PDF con el texto traducido
-                pdf = FPDF()
-                pdf.add_page()
-                pdf.set_font("Arial", size=12)
-                pdf.multi_cell(0, 10, translation)
-                pdf_file = f"traduccion.pdf"
-                pdf.output(pdf_file)
+                # Generar archivo DOCX con el texto traducido
+                doc = Document()
+                doc.add_paragraph(translation)
+                doc_file = f"traduccion.docx"
+                doc.save(doc_file)
 
-                # Descargar el resultado en formato PDF
-                st.download_button("Descargar traducción", data=open(pdf_file, "rb").read(), file_name=pdf_file)
+                # Descargar el resultado en formato DOCX
+                st.download_button("Descargar traducción", data=open(doc_file, "rb").read(), file_name=doc_file)
             else:
                 st.error("Error al traducir el texto. Verifique su clave API o intente nuevamente.")
         else:
