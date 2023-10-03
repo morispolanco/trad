@@ -1,6 +1,8 @@
 import streamlit as st
 import requests
+from PyPDF2 import PdfFileReader
 from docx import Document
+from fpdf import FPDF
 
 # URL base de la API de AI Translate
 BASE_URL = "https://ai-translate.pro/api"
@@ -28,14 +30,16 @@ st.markdown("Las redes neuronales de AITranslate son capaces de captar hasta los
 # Ingresar clave API
 secret_key = st.text_input("Ingrese su clave API de AI Translate")
 
-# Cargar archivo DOCX
-uploaded_file = st.file_uploader("Cargar archivo DOCX", type=["docx"])
+# Cargar archivo PDF
+uploaded_file = st.file_uploader("Cargar archivo PDF", type=["pdf"])
 
 # Verificar si se cargó un archivo
 if uploaded_file is not None:
-    # Leer el contenido del archivo DOCX
-    docx = Document(uploaded_file)
-    text = "\n".join([paragraph.text for paragraph in docx.paragraphs])
+    # Leer el contenido del archivo PDF
+    pdf = PdfFileReader(uploaded_file)
+    text = ""
+    for page in range(pdf.getNumPages()):
+        text += pdf.getPage(page).extractText()
 
     # Mostrar el contenido del archivo
     st.text_area("Contenido del archivo", value=text)
@@ -49,17 +53,19 @@ if uploaded_file is not None:
         if secret_key:
             translation, available_chars = translate_text(text, lang_from, lang_to, secret_key)
             if translation:
-                st.success(f"Texto traducido: {translation}")
                 st.info(f"Caracteres disponibles: {available_chars}")
 
-                # Descargar el resultado en formato DOCX
-                translated_docx = Document()
-                translated_docx.add_paragraph(translation)
-                st.download_button("Descargar traducción", data=translated_docx.save, file_name="traduccion.docx")
+                # Generar archivo PDF con el texto traducido
+                pdf = FPDF()
+                pdf.add_page()
+                pdf.set_font("Arial", size=12)
+                pdf.multi_cell(0, 10, translation)
+                pdf_file = f"traduccion.pdf"
+                pdf.output(pdf_file)
+
+                # Descargar el resultado en formato PDF
+                st.download_button("Descargar traducción", data=open(pdf_file, "rb").read(), file_name=pdf_file)
             else:
                 st.error("Error al traducir el texto. Verifique su clave API o intente nuevamente.")
         else:
             st.error("Por favor, ingrese su clave API de AI Translate.")
-
-
-
