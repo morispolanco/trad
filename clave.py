@@ -24,7 +24,8 @@ st.title("AI Translate")
 
 # Agregar título y texto en la parte superior
 st.markdown("## La mejor traducción automática del mundo")
-st.markdown("Las redes neuronales de AITranslate son capaces de captar hasta los más mínimos matices y reproducirlos en la traducción a diferencia de cualquier otro servicio. Para evaluar la calidad de nuestros modelos de traducción automática, realizamos regularmente pruebas a ciegas. En las pruebas a ciegas, los traductores profesionales seleccionan la traducción más precisa sin saber qué empresa la produjo. AITranslate supera a la competencia por un factor de 3:1.")
+st.markdown("Las redes neuronales de AI Translate son capaces de captar hasta los más mínimos matices y reproducirlos en la traducción a diferencia de cualquier otro servicio. Para evaluar la calidad de nuestros modelos de traducción automática, realizamos regularmente pruebas a ciegas. En las pruebas a ciegas, los traductores profesionales seleccionan la traducción más precisa sin saber qué empresa la produjo. AITranslate supera a la competencia por un factor de 3:1.")
+st.markdown("Para obtener su clave de AI Translate, escriba a info@editorialarje.com")
 
 # Ingresar clave API
 secret_key = st.text_input("Ingrese su clave API de AI Translate")
